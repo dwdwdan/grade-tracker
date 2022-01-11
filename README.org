@@ -1,0 +1,12 @@
+#+TITLE: gradeTracker
+
+This is a WIP CLI written in python for tracking grades. It stores the data in a yaml file. It currently has no real UX, the main script has to be edited to change what it does, though this is definitely on my todo list.
+
+* Installation
+To install this (idk why you'd want to but go ahead) just run
+
+#+begin_example
+git clone https://github.com/dwdwdan/gradeTracker.git
+#+end_example
+
+The data is stored in ~data.yml~ but this file can be changes with the ~--config-file~ flag
