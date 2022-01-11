@@ -10,3 +10,5 @@ modules:
         percent: 25
   - module: MI
     weighting: 80
+
+ignore_unmarked: true

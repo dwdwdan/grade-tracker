@@ -13,9 +13,15 @@ parser.add_argument('-f', '--file',
 parser.add_argument('--ignore-unmarked',
                     help='If enabled, gradeTracker will not assume that unmarked modules are 0.',
                     dest='ignore_unmarked',
+                    default=None,
                     action='store_true')
 
-args=parser.parse_args()
+parser.add_argument('--use-unmarked',
+                    help='If enabled, gradeTracker will assume that unmarked modules are 0.',
+                    dest='ignore_unmarked',
+                    default=None,
+                    action='store_false')
+
 
 def print_module_tree(module_list, prestring):
     """Prints a tree of modules from module_list.
@@ -24,6 +30,7 @@ def print_module_tree(module_list, prestring):
     for module in module_list:
         print(f'{prestring}Module {module["module"]} with percentage {module["weighting"]}')
         if 'modules' in module:
+            # This means there are submodules, so we should recurse into them
             print_module_tree(module["modules"], prestring+"  ")
 
 def check_module_tree(module_list):
@@ -86,6 +93,7 @@ def calc_percentage(module_list):
 
 def check_config_file(config):
     """Checks whether the config file is valid"""
+    # This essentially wraps check_module_tree to additionally check the outer layer
     if check_module_tree(config["modules"]) == False:
         print(f"Config File Invalid \nRoot tree's percent does not sum to 100", file=sys.stderr)
         sys.exit()
@@ -94,6 +102,12 @@ def check_config_file(config):
 def open_config_file():
     """Open and check the config file is valid.
     Returns a dictionary containing the config"""
+
+    # I want to parse the arguments here so I can set the default values from
+    # the config file before running anything else
+    global args
+    args=parser.parse_args()
+
     with open(args.file,"r") as config_file:
         # Load the config file
         try:
@@ -103,6 +117,11 @@ def open_config_file():
             print(exc,file=sys.stderr)
             sys.exit()
     check_config_file(config)
+    if args.ignore_unmarked==None:
+        if "ignore_unmarked" in config:
+            args.ignore_unmarked=config["ignore_unmarked"]
+        else:
+            args.ignore_unmarked=true
     return config
 
 
