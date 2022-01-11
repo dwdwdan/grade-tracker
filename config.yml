@@ -1,0 +1,10 @@
+modules:
+  - module: NMP
+    percent: 20
+    modules:
+      - module: ass1
+        percent: 80
+      - module: ass2
+        percent: 20
+  - module: MI
+    percent: 80
