@@ -9,7 +9,7 @@ def print_module_tree(module_list, prestring):
     prestring will be put at the start of each message,
     and 2 spaces will be appended for each added layer"""
     for module in module_list:
-        print(f'{prestring}Module {module["module"]} with percentage {module["percent"]}')
+        print(f'{prestring}Module {module["module"]} with percentage {module["max-percent"]}')
         if 'modules' in module:
             print_module_tree(module["modules"], prestring+"  ")
 
@@ -19,7 +19,7 @@ def check_module_tree(module_list):
     and will throw an error otherwise"""
     total_percent = 0
     for module in module_list:
-        total_percent += module["percent"]
+        total_percent += module["max-percent"]
         if 'modules' in module:
             if check_module_tree(module["modules"]) == False:
                 print(f"Config File Invalid \n{module['module']}'s submodules do not sum to 100%", file=sys.stderr)
