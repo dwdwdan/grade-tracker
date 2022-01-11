@@ -25,7 +25,7 @@ parser.add_argument('--use-unmarked',
 parser.add_argument('command',
                     help='Command to run',
                     nargs='?',
-                    choices=['print'])
+                    choices=['print-marks', 'print-modules'])
 
 
 def print_module_tree(module_list, prestring):
@@ -54,23 +54,27 @@ def check_module_tree(module_list):
         return False
 
 
-def calc_percentage(module_list, module_name):
+def calc_percentage(module_list, module_name, prestring):
     """Calculates the weighted average percentage inside module_list,
-    assuming anything without a percent is 0.
-    If args.command is 'print' it will also print the percentages"""
+    respecting, ignore_unmarked
+    It will also compute print_strings in case we want to print later"""
 
     # First we want to generate lists of all of the percentages and weightings on this level
     percentages=[]
     weightings=[]
+    # This an array of strings ready for later printing
+    global print_strings
+    if 'print_strings' not in globals():
+        print_strings=[]
+
     for module in module_list:
         if 'modules' in module:
             # we need to recursively compute it
-            percent = calc_percentage(module['modules'], module['module'])
+            percent = calc_percentage(module['modules'], module['module'], prestring+"  ")
         elif 'percent' in module:
             # We are at the bottom of the tree, this is as small as we get
             percent=module["percent"]
-            if args.command=='print':
-                print(f"{module['module']}: {percent}")
+            print_strings.append(f"{prestring+'  '}{module['module']}: {percent}")
         else:
             # This module currently has no percent,
             # so we don't want to append to the list
@@ -96,9 +100,9 @@ def calc_percentage(module_list, module_name):
 
     # and then compute the average
     avg=sum(weightedPercentages)/len(weightedPercentages)
-    if args.command=='print':
-        print(f'{module_name}: {avg}')
+    print_strings.append(f'{prestring}{module_name}: {avg}')
     return avg
+
 
 
 
@@ -139,4 +143,13 @@ def open_config_file():
 
 config = open_config_file()
 
-calc_percentage(config["modules"],'Overall')
+calc_percentage(config["modules"],'Overall','')
+
+if args.command=='print-marks':
+    # print_strings give us the right strings but upside down, so we reverse
+    # them and then print them
+    print_strings.reverse()
+    for string in print_strings:
+        print(string)
+elif args.command=='print-modules':
+    print_module_tree(config["modules"],"")
