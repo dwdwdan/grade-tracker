@@ -1,3 +1,5 @@
+ignore_unmarked: true
+
 modules:
   - module: NMP
     weighting: 20
@@ -10,5 +12,3 @@ modules:
         percent: 25
   - module: MI
     weighting: 80
-
-ignore_unmarked: true
