@@ -1,4 +1,5 @@
 ignore_unmarked: true
+indent_string: "  "
 
 modules:
   - module: NMP
@@ -11,4 +12,7 @@ modules:
         weighting: 20
         percent: 25
   - module: MI
-    weighting: 80
+    weighting: 30
+    percent: 50
+  - module: LALP
+    weighting: 50

@@ -22,6 +22,11 @@ parser.add_argument('--use-unmarked',
                     default=None,
                     action='store_false')
 
+parser.add_argument('--indent-string',
+                    help='String that should be used to indent each option. "  " by default',
+                    dest='indent_string',
+                    default=None)
+
 parser.add_argument('command',
                     help='Command to run',
                     nargs='?',
@@ -39,7 +44,7 @@ def print_module_tree(module_list, prestring):
         print(fstring)
         if 'modules' in module:
             # This means there are submodules, so we should recurse into them
-            print_module_tree(module["modules"], prestring+"  ")
+            print_module_tree(module["modules"], prestring+args.indent_string)
 
 def check_module_tree(module_list):
     """Checks the module tree inside module_list.
@@ -73,11 +78,11 @@ def calc_percentage(module_list, module_name, prestring):
     for module in module_list:
         if 'modules' in module:
             # we need to recursively compute it
-            percent = calc_percentage(module['modules'], module['module'], prestring+"  ")
+            percent = calc_percentage(module['modules'], module['module'], prestring+args.indent_string)
         elif 'percent' in module:
             # We are at the bottom of the tree, this is as small as we get
             percent=module["percent"]
-            print_strings.append(f"{prestring+'  '}{module['module']}: {percent}")
+            print_strings.append(f"{prestring+args.indent_string}{module['module']}: {percent}")
         else:
             # This module currently has no percent,
             # so we don't want to append to the list
@@ -109,7 +114,6 @@ def calc_percentage(module_list, module_name, prestring):
 
 
 
-
 def check_config_file(config):
     """Checks whether the config file is valid"""
     # This essentially wraps check_module_tree to additionally check the outer layer
@@ -136,12 +140,20 @@ def open_config_file():
             print(exc,file=sys.stderr)
             sys.exit()
     check_config_file(config)
+
     if args.ignore_unmarked==None:
         if "ignore_unmarked" in config:
             args.ignore_unmarked=config["ignore_unmarked"]
         else:
             args.ignore_unmarked=true
+
+    if args.indent_string==None:
+        if "indent_string" in config:
+            args.indent_string=config["indent_string"]
+        else:
+            args.indent_string="  "
     return config
+
 
 
 config = open_config_file()
