@@ -25,7 +25,7 @@ parser.add_argument('--use-unmarked',
 parser.add_argument('command',
                     help='Command to run',
                     nargs='?',
-                    choices=['print-marks', 'print-modules'])
+                    choices=['print-marks', 'print-modules', 'check-config'])
 
 
 def print_module_tree(module_list, prestring):
@@ -154,5 +154,10 @@ if args.command=='print-marks':
     print_strings.reverse()
     for string in print_strings:
         print(string)
+
 elif args.command=='print-modules':
     print_module_tree(config["modules"],"")
+
+elif args.command=='check-config':
+    # We've already checked the config is valid so we can just tell the user
+    print("Config is valid")
