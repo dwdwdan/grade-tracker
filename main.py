@@ -33,7 +33,10 @@ def print_module_tree(module_list, prestring):
     prestring will be put at the start of each message,
     and 2 spaces will be appended for each added layer"""
     for module in module_list:
-        print(f'{prestring}Module {module["module"]} with percentage {module["weighting"]}')
+        fstring=f'{prestring}{module["module"]} with weighting {module["weighting"]}'
+        if 'percent' in module:
+            fstring+=f' and percentage {module["percent"]}'
+        print(fstring)
         if 'modules' in module:
             # This means there are submodules, so we should recurse into them
             print_module_tree(module["modules"], prestring+"  ")
