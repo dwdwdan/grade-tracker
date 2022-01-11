@@ -2,7 +2,13 @@
 
 import yaml
 import sys
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-f', '--file',
+                    help='The file to use to store config and data.',
+                    default='data.yml')
+args=parser.parse_args()
 
 def print_module_tree(module_list, prestring):
     """Prints a tree of modules from module_list.
@@ -36,7 +42,9 @@ def check_config_file(config):
 
 
 def open_config_file():
-    with open("config.yml","r") as config_file:
+    """Open and check the config file is valid.
+    Returns a dictionary containing the config"""
+    with open(args.file,"r") as config_file:
         # Load the config file
         try:
             config = yaml.safe_load(config_file)
