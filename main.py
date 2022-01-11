@@ -5,9 +5,16 @@ import sys
 import argparse
 
 parser = argparse.ArgumentParser()
+
 parser.add_argument('-f', '--file',
                     help='The file to use to store config and data.',
                     default='data.yml')
+
+parser.add_argument('--ignore-unmarked',
+                    help='If enabled, gradeTracker will not assume that unmarked modules are 0.',
+                    dest='ignore_unmarked',
+                    action='store_true')
+
 args=parser.parse_args()
 
 def print_module_tree(module_list, prestring):
@@ -34,10 +41,12 @@ def check_module_tree(module_list):
         # The percentages do not add up to 100, we should throw an error
         return False
 
+
 def calc_percentage(module_list):
     """Calculates the weighted average percentage inside module_list,
     assuming anything without a percent is 0"""
-    weightedPercents=[]
+
+    # First we want to generate lists of all of the percentages and weightings on this level
     percentages=[]
     weightings=[]
     for module in module_list:
@@ -53,8 +62,26 @@ def calc_percentage(module_list):
         weighting=module["weighting"]
         percentages.append(percent)
         weightings.append(weighting)
-        weightedPercents.append(percent*weighting/100)
-    return sum(weightedPercents)/len(weightedPercents)
+
+    # If we want to ignore unmarked, we need to adjust the weightings so that this happens
+    if args.ignore_unmarked:
+        # We don't want to assume 0, so we need to recompute weightings
+        # We do this by finding a scale factor to scale them by so the total weighting is 100
+        total_weighting=sum(weightings)
+        scale_factor=100/total_weighting
+        # Now we update weightings to be scaled by the scale factor
+        for idx,weighting in enumerate(weightings):
+            weightings[idx]=scale_factor*weighting
+
+    # Now we can compute a list of weighted percentages
+    weightedPercentages=[]
+    for idx,percent in enumerate(percentages):
+        weightedPercentages.append(percent*weightings[idx]/100)
+
+    # and then return the average
+    return sum(weightedPercentages)/len(weightedPercentages)
+
+
 
 
 def check_config_file(config):
