@@ -1,10 +1,10 @@
 modules:
   - module: NMP
-    max-percent: 20
+    weighting: 20
     modules:
       - module: ass1
-        max-percent: 80
+        weighting: 80
       - module: ass2
-        max-percent: 20
+        weighting: 20
   - module: MI
-    max-percent: 80
+    weighting: 80
