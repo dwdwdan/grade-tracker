@@ -22,6 +22,11 @@ parser.add_argument('--use-unmarked',
                     default=None,
                     action='store_false')
 
+parser.add_argument('command',
+                    help='Command to run',
+                    nargs='?',
+                    choices=['print'])
+
 
 def print_module_tree(module_list, prestring):
     """Prints a tree of modules from module_list.
@@ -49,9 +54,10 @@ def check_module_tree(module_list):
         return False
 
 
-def calc_percentage(module_list):
+def calc_percentage(module_list, module_name):
     """Calculates the weighted average percentage inside module_list,
-    assuming anything without a percent is 0"""
+    assuming anything without a percent is 0.
+    If args.command is 'print' it will also print the percentages"""
 
     # First we want to generate lists of all of the percentages and weightings on this level
     percentages=[]
@@ -59,9 +65,12 @@ def calc_percentage(module_list):
     for module in module_list:
         if 'modules' in module:
             # we need to recursively compute it
-            percent = calc_percentage(module['modules'])
+            percent = calc_percentage(module['modules'], module['module'])
         elif 'percent' in module:
+            # We are at the bottom of the tree, this is as small as we get
             percent=module["percent"]
+            if args.command=='print':
+                print(f"{module['module']}: {percent}")
         else:
             # This module currently has no percent,
             # so we don't want to append to the list
@@ -85,8 +94,11 @@ def calc_percentage(module_list):
     for idx,percent in enumerate(percentages):
         weightedPercentages.append(percent*weightings[idx]/100)
 
-    # and then return the average
-    return sum(weightedPercentages)/len(weightedPercentages)
+    # and then compute the average
+    avg=sum(weightedPercentages)/len(weightedPercentages)
+    if args.command=='print':
+        print(f'{module_name}: {avg}')
+    return avg
 
 
 
@@ -127,4 +139,4 @@ def open_config_file():
 
 config = open_config_file()
 
-print(calc_percentage(config["modules"]))
+calc_percentage(config["modules"],'Overall')
