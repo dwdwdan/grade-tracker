@@ -23,14 +23,14 @@ def check_module_tree(module_list):
     """Checks the module tree inside module_list.
     Will check that the total percentage is 100,
     and will throw an error otherwise"""
-    total_percent = 0
+    total_weighting = 0
     for module in module_list:
-        total_percent += module["weighting"]
+        total_weighting += module["weighting"]
         if 'modules' in module:
             if check_module_tree(module["modules"]) == False:
                 print(f"Config File Invalid \n{module['module']}'s submodules do not sum to 100%", file=sys.stderr)
                 sys.exit()
-    if total_percent != 100:
+    if total_weighting != 100:
         # The percentages do not add up to 100, we should throw an error
         return False
 
