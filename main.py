@@ -34,6 +34,29 @@ def check_module_tree(module_list):
         # The percentages do not add up to 100, we should throw an error
         return False
 
+def calc_percentage(module_list):
+    """Calculates the weighted average percentage inside module_list,
+    assuming anything without a percent is 0"""
+    weightedPercents=[]
+    percentages=[]
+    weightings=[]
+    for module in module_list:
+        if 'modules' in module:
+            # we need to recursively compute it
+            percent = calc_percentage(module['modules'])
+        elif 'percent' in module:
+            percent=module["percent"]
+        else:
+            # This module currently has no percent,
+            # so we don't want to append to the list
+            continue
+        weighting=module["weighting"]
+        percentages.append(percent)
+        weightings.append(weighting)
+        weightedPercents.append(percent*weighting/100)
+    return sum(weightedPercents)/len(weightedPercents)
+
+
 def check_config_file(config):
     """Checks whether the config file is valid"""
     if check_module_tree(config["modules"]) == False:
@@ -55,4 +78,7 @@ def open_config_file():
     check_config_file(config)
     return config
 
+
 config = open_config_file()
+
+print(calc_percentage(config["modules"]))

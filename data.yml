@@ -4,7 +4,9 @@ modules:
     modules:
       - module: ass1
         weighting: 80
+        percent: 30
       - module: ass2
         weighting: 20
+        percent: 25
   - module: MI
     weighting: 80
