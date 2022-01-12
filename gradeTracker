@@ -60,12 +60,12 @@ parser.add_argument('--use-unmarked',
                     action='store_false')
 
 parser.add_argument('--indent-string',
-                    help='String that should be used to indent each option. "  " by default',
+                    help='String that should be used to indent each option. \"  \" by default',
                     dest='indent_string',
                     default=None)
 
 parser.add_argument('--post-string',
-                    help='String that should be displayed after a grade is shown. "%" by default',
+                    help='String that should be displayed after a grade is shown. \"%%\" by default',
                     dest='post_string',
                     default=None)
 
