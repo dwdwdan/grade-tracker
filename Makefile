@@ -18,6 +18,10 @@ install:
 	cp config.yml ${XDG_CONFIG_HOME}/gradeTracker/config.yml
 	cp data.yml ${XDG_DATA_HOME}/gradeTracker/data.yml
 
+update:
+	rm -rf ${INSTALL_FOLDER}/gradeTracker
+	cp gradeTracker ${INSTALL_FOLDER}/gradeTracker
+
 uninstall:
 	rm ${INSTALL_FOLDER}/gradeTracker
 	rm -rf ${XDG_CONFIG_HOME}/gradeTracker
