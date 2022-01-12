@@ -43,6 +43,9 @@ This is used each time gradeTracker indents. Default is "  ", but "|   " also lo
 ** post_string
 This is used after each mark is given. Defaults to "%"
 
+** total_weighting_tolerance
+How close we require the total weighting to be to 100. This is so that fractional percentages can be properly used.
+
 * Usage
 The ~gradeTracker~ command has one required parameter, which is the command you would like to run.
 It has 3 options:

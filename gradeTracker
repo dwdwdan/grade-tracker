@@ -6,6 +6,7 @@ import argparse
 from xdg import xdg_config_home, xdg_data_home
 from os.path import exists as file_exists
 
+
 def default_config_file():
     xdg_config_file=str(xdg_config_home())+"/gradeTracker/config.yml"
     if file_exists(xdg_config_file):
@@ -68,6 +69,11 @@ parser.add_argument('--post-string',
                     dest='post_string',
                     default=None)
 
+parser.add_argument('--total-weighting-tolerance',
+                    help='How close do we require the total weight to be to 100',
+                    dest='total_weighting_tolerance',
+                    default=None)
+
 parser.add_argument('command',
                     help='Command to run',
                     choices=['print-marks', 'print-modules', 'check-config'])
@@ -97,7 +103,7 @@ def check_module_tree(module_list):
             if check_module_tree(module["modules"]) == False:
                 print(f"Config File Invalid \n{module['module']}'s submodules do not sum to 100%", file=sys.stderr)
                 sys.exit()
-    if total_weighting != 100:
+    if abs(total_weighting - 100) > args.total_weighting_tolerance:
         # The percentages do not add up to 100, we should throw an error
         return False
 
@@ -184,6 +190,11 @@ def open_config_file():
         if args.data_file==None:
             args.data_file=default_data_file(config)
 
+        if "total_weighting_tolerance" in config:
+            args.total_weighting_tolerance=config["total_weighting_tolerance"]
+        else:
+            args.total_weighting_tolerance=5
+
         with open(args.data_file,"r") as data_file:
             # Load the data file
             try:
@@ -211,6 +222,7 @@ def open_config_file():
             args.post_string=config["post_string"]
         else:
             args.post_string="%"
+
     return config, data
 
 
