@@ -152,8 +152,8 @@ def calc_percentage(module_list, module_name, prestring):
     for idx,percent in enumerate(percentages):
         weightedPercentages.append(percent*weightings[idx]/100)
 
-    # and then compute the average
-    avg=sum(weightedPercentages)/len(weightedPercentages)
+    # and then compute the sum
+    avg=sum(weightedPercentages)
     print_strings.append(f'{prestring}{module_name}: {avg}{args.post_string}')
     return avg
 
