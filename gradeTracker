@@ -8,6 +8,16 @@ from os.path import exists as file_exists
 
 __version__="1.0.1"
 
+def trunc(num,n):
+    """Casts a float num to a string with n digits of precision."""
+    temp = str(num)
+    for x in range(len(temp)):
+        if temp[x] == '.':
+            try:
+                return float(temp[:x+n+1])
+            except:
+                return float(temp)
+    return temp
 
 def default_config_file():
     xdg_config_file=str(xdg_config_home())+"/gradeTracker/config.yml"
@@ -134,7 +144,8 @@ def calc_percentage(module_list, module_name, prestring):
         elif 'percent' in module:
             # We are at the bottom of the tree, this is as small as we get
             percent=module["percent"]
-            print_strings.append(f"{prestring+args.indent_string}{module['module']}: {percent}{args.post_string}")
+            percent_string=trunc(percent,2)
+            print_strings.append(f"{prestring+args.indent_string}{module['module']}: {percent_string}{args.post_string}")
         else:
             # This module currently has no percent,
             # so we don't want to append to the list
@@ -160,7 +171,8 @@ def calc_percentage(module_list, module_name, prestring):
 
     # and then compute the sum
     avg=sum(weightedPercentages)
-    print_strings.append(f'{prestring}{module_name}: {avg}{args.post_string}')
+    avg_string=trunc(avg,2)
+    print_strings.append(f'{prestring}{module_name}: {avg_string}{args.post_string}')
     return avg
 
 
