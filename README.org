@@ -12,8 +12,10 @@ $ git clone https://github.com/dwdwdan/gradeTracker.git
 ~cd~ into the folder and run
 
 #+begin_example sh
-$ make setup && sudo make install
+$ make setup && make install
 #+end_example
+
+This will install gradeTracker to ​~~/.local/bin~
 
 It can also be run directly from the git repository by running the file ~gradeTracker~
 
