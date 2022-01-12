@@ -1,19 +1,28 @@
-ignore_unmarked: true
-indent_string: "  "
-post_string: "%"
-
 modules:
-  - module: NMP
+  - module: Year 1
     weighting: 20
     modules:
-      - module: ass1
-        weighting: 80
-        percent: 30
-      - module: ass2
+      - module: Module 1
+        weighting: 60
+        modules:
+          - module: Assignment 1
+            weighting: 30
+            percent: 80
+          - module: Assignment 2
+            weighting: 70
+            percent: 40
+      - module: Module 2
         weighting: 20
         percent: 25
-  - module: MI
+      - module: Module 3
+        weighting: 20
+        percent: 25
+  - module: Year 2
     weighting: 30
-    percent: 50
-  - module: LALP
+    modules:
+      - module: Module 1
+        weighting: 50
+      - module: Module 2
+        weighting: 50
+  - module: Year 3
     weighting: 50

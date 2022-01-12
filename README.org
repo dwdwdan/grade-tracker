@@ -1,12 +1,51 @@
 #+TITLE: gradeTracker
 
-This is a WIP CLI written in python for tracking grades. It stores the data in a yaml file. It currently has no real UX, the main script has to be edited to change what it does, though this is definitely on my todo list.
+This is a CLI written in python for tracking grades. It reads data from a yaml file
 
 * Installation
-To install this (idk why you'd want to but go ahead) just run
+To install this clone the repo with
 
-#+begin_example
-git clone https://github.com/dwdwdan/gradeTracker.git
+#+begin_example sh
+$ git clone https://github.com/dwdwdan/gradeTracker.git
 #+end_example
 
-The data is stored in ~data.yml~ but this file can be changes with the ~--config-file~ flag
+~cd~ into the folder and run
+
+#+begin_example sh
+$ make setup && make install
+#+end_example
+
+This will install gradeTracker to ​~~/.local/bin~
+
+It can also be run directly from the git repository by running the file ~gradeTracker~
+
+* The Data File
+The data file, by default read from ~$XDG_DATA_HOME/gradeTracker/data.yml~ is a yaml file containing the data to calculate with.
+
+The file should always contain a ~modules~ key with a list of submodules. These submodules should have a ~weighting~ set which sums to 100 (this is checked when gradeTracker is run). This represents how much this module is worth.
+
+The key ~percent~ represents the mark given out of 100 for that assignment. If not set, gradeTracker will ignore the module or assume it's 0 depending on ~ignore_unmarked~
+
+A module can also have submodules by including the ~modules~ tag, and following the same pattern. gradeTracker should deal with any depths, though it is not thoroughly tested will many layers.
+
+* Configuration
+Configuration is done in the yaml file ~$XDG_CONFIG_HOME/gradeTracker/config.yml~. By default this is ​~~/.config/gradeTracker/config.yml~
+There is 5 possible options:
+** ignore_unmarked
+If set to true, gradeTracker will ignore variables without a mark attatched.
+If set to false, gradeTracker will assume they are 0.
+Defaults to true if unset.
+** data_file
+This is the file that gradeTracker will read to calculate percentages.
+If not set, it will default to ~$XDG_DATA_HOME/gradeTracker/data.yml~
+** indent_string
+This is used each time gradeTracker indents. Default is "  ", but "|   " also looks nice
+** post_string
+This is used after each mark is given. Defaults to "%"
+
+* Usage
+The ~gradeTracker~ command has one required parameter, which is the command you would like to run.
+It has 3 options:
+- ~print-marks~ will calculate and output a breakdown of marks, calculating the percentages at each module
+- ~print-modules~ will output the module tree, showing the name, weighting and percent. This is essentially just reformatting the ~data.yml~ file.
+- ~check-config~ will check the data file and config file for validity.
