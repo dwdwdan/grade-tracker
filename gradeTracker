@@ -3,12 +3,26 @@
 import yaml
 import sys
 import argparse
+from xdg import xdg_config_home
+from os.path import exists as file_exists
+
+def default_config_file():
+    xdg_config_file=str(xdg_config_home())+"/gradeTracker/config.yml"
+    if file_exists(xdg_config_file):
+        return xdg_config_file
+    elif file_exists('data.yml'):
+        return 'data.yml'
+    else:
+        print('No config file found. Please place one at $XDG_CONFIG_HOME/gradeTracker/config.yml', file=sys.stderr)
+        sys.exit()
+
+
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-f', '--file',
                     help='The file to use to store config and data.',
-                    default='data.yml')
+                    default=default_config_file())
 
 parser.add_argument('--ignore-unmarked',
                     help='If enabled, gradeTracker will not assume that unmarked modules are 0.',
