@@ -11,4 +11,3 @@ modules:
   - module: MI
     weighting: 80
 
-ignore_unmarked: true
