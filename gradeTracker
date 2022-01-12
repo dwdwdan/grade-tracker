@@ -16,9 +16,16 @@ def default_config_file():
         print('No config file found. Please place one at $XDG_CONFIG_HOME/gradeTracker/config.yml', file=sys.stderr)
         sys.exit()
 
-def default_data_file():
+def default_data_file(config):
     xdg_data_file=str(xdg_data_home())+"/gradeTracker/data.yml"
-    if file_exists(xdg_data_file):
+    if "data_file" in config:
+        if file_exists(config["data_file"]):
+            return config["data_file"]
+        else:
+            print(f'{config["data_file"]} is set as the data file but does not exist.\nThis must be an explicit path (i.e. does not contain ~ or environment variables)', file=sys.stderr)
+            sys.exit()
+
+    elif file_exists(xdg_data_file):
         return xdg_data_file
     elif file_exists('data.yml'):
         return 'data.yml'
@@ -36,7 +43,7 @@ parser.add_argument('-c', '--config-file',
 
 parser.add_argument('-d', '--data-file',
                     help='The file used for data',
-                    default=default_data_file(),
+                    default=None,
                     dest='data_file')
 
 parser.add_argument('--ignore-unmarked',
@@ -146,6 +153,9 @@ def open_config_file():
             print("Config File Invalid, YAML processor returns:")
             print(exc,file=sys.stderr)
             sys.exit()
+
+        if args.data_file==None:
+            args.data_file=default_data_file(config)
 
         with open(args.data_file,"r") as data_file:
             # Load the data file
