@@ -3,26 +3,48 @@
 import yaml
 import sys
 import argparse
-from xdg import xdg_config_home
+from xdg import xdg_config_home, xdg_data_home
 from os.path import exists as file_exists
 
 def default_config_file():
     xdg_config_file=str(xdg_config_home())+"/gradeTracker/config.yml"
     if file_exists(xdg_config_file):
         return xdg_config_file
-    elif file_exists('data.yml'):
-        return 'data.yml'
+    elif file_exists('config.yml'):
+        return 'config.yml'
     else:
         print('No config file found. Please place one at $XDG_CONFIG_HOME/gradeTracker/config.yml', file=sys.stderr)
         sys.exit()
 
+def default_data_file(config):
+    xdg_data_file=str(xdg_data_home())+"/gradeTracker/data.yml"
+    if "data_file" in config:
+        if file_exists(config["data_file"]):
+            return config["data_file"]
+        else:
+            print(f'{config["data_file"]} is set as the data file but does not exist.\nThis must be an explicit path (i.e. does not contain ~ or environment variables)', file=sys.stderr)
+            sys.exit()
+
+    elif file_exists(xdg_data_file):
+        return xdg_data_file
+    elif file_exists('data.yml'):
+        return 'data.yml'
+    else:
+        print('No data file found. Please place one at $XDG_DATA_HOME/gradeTracker/data.yml', file=sys.stderr)
+        sys.exit()
 
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-f', '--file',
-                    help='The file to use to store config and data.',
-                    default=default_config_file())
+parser.add_argument('-c', '--config-file',
+                    help='The file used for configuration',
+                    default=default_config_file(),
+                    dest='config_file')
+
+parser.add_argument('-d', '--data-file',
+                    help='The file used for data',
+                    default=None,
+                    dest='data_file')
 
 parser.add_argument('--ignore-unmarked',
                     help='If enabled, gradeTracker will not assume that unmarked modules are 0.',
@@ -105,11 +127,11 @@ def calc_percentage(module_list):
 
 
 
-def check_config_file(config):
-    """Checks whether the config file is valid"""
+def check_data_file(data):
+    """Checks whether the data file is valid"""
     # This essentially wraps check_module_tree to additionally check the outer layer
-    if check_module_tree(config["modules"]) == False:
-        print(f"Config File Invalid \nRoot tree's percent does not sum to 100", file=sys.stderr)
+    if check_module_tree(data["modules"]) == False:
+        print(f"Data File Invalid \nRoot tree's percent does not sum to 100", file=sys.stderr)
         sys.exit()
 
 
@@ -122,23 +144,38 @@ def open_config_file():
     global args
     args=parser.parse_args()
 
-    with open(args.file,"r") as config_file:
+    with open(args.config_file,"r") as config_file:
         # Load the config file
         try:
             config = yaml.safe_load(config_file)
         except yaml.YAMLError as exc:
+            # The yaml in the config is invalid. tell the user and return
             print("Config File Invalid, YAML processor returns:")
             print(exc,file=sys.stderr)
             sys.exit()
-    check_config_file(config)
+
+        if args.data_file==None:
+            args.data_file=default_data_file(config)
+
+        with open(args.data_file,"r") as data_file:
+            # Load the data file
+            try:
+                data = yaml.safe_load(data_file)
+            except yaml.YAMLError as exc:
+                # The yaml in the data is invalid, tell the user and return
+                print("Data File Invalid, YAML processor returns:")
+                print(exc,file=sys.stderr)
+                sys.exit()
+            # Check the modules in the data file are configured validly
+            check_data_file(data)
     if args.ignore_unmarked==None:
         if "ignore_unmarked" in config:
             args.ignore_unmarked=config["ignore_unmarked"]
         else:
-            args.ignore_unmarked=true
-    return config
+            args.ignore_unmarked=True
+    return config, data
 
 
-config = open_config_file()
+config, data = open_config_file()
 
-print(calc_percentage(config["modules"]))
+print(calc_percentage(data["modules"]))
