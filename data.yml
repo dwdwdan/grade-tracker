@@ -1,3 +1,7 @@
+ignore_unmarked: true
+indent_string: "  "
+post_string: "%"
+
 modules:
   - module: NMP
     weighting: 20
@@ -9,6 +13,7 @@ modules:
         weighting: 20
         percent: 25
   - module: MI
-    weighting: 80
-
-ignore_unmarked: true
+    weighting: 30
+    percent: 50
+  - module: LALP
+    weighting: 50
