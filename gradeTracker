@@ -6,6 +6,8 @@ import argparse
 from xdg import xdg_config_home, xdg_data_home
 from os.path import exists as file_exists
 
+__version__="1.0.1"
+
 
 def default_config_file():
     xdg_config_file=str(xdg_config_home())+"/gradeTracker/config.yml"
@@ -73,6 +75,10 @@ parser.add_argument('--total-weighting-tolerance',
                     help='How close do we require the total weight to be to 100',
                     dest='total_weighting_tolerance',
                     default=None)
+
+parser.add_argument('-v','--version',
+                    action='version',
+                    version="%(prog)s ("+__version__+")")
 
 parser.add_argument('command',
                     help='Command to run',
