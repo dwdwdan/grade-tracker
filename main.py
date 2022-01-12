@@ -27,6 +27,11 @@ parser.add_argument('--indent-string',
                     dest='indent_string',
                     default=None)
 
+parser.add_argument('--post-string',
+                    help='String that should be displayed after a grade is shown. "%" by default',
+                    dest='post_string',
+                    default=None)
+
 parser.add_argument('command',
                     help='Command to run',
                     choices=['print-marks', 'print-modules', 'check-config'])
@@ -37,9 +42,9 @@ def print_module_tree(module_list, prestring):
     prestring will be put at the start of each message,
     and 2 spaces will be appended for each added layer"""
     for module in module_list:
-        fstring=f'{prestring}{module["module"]} with weighting {module["weighting"]}'
+        fstring=f'{prestring}{module["module"]} with weighting {module["weighting"]}{args.post_string}'
         if 'percent' in module:
-            fstring+=f' and percentage {module["percent"]}'
+            fstring+=f' and percentage {module["percent"]}{args.post_string}'
         print(fstring)
         if 'modules' in module:
             # This means there are submodules, so we should recurse into them
@@ -81,7 +86,7 @@ def calc_percentage(module_list, module_name, prestring):
         elif 'percent' in module:
             # We are at the bottom of the tree, this is as small as we get
             percent=module["percent"]
-            print_strings.append(f"{prestring+args.indent_string}{module['module']}: {percent}")
+            print_strings.append(f"{prestring+args.indent_string}{module['module']}: {percent}{args.post_string}")
         else:
             # This module currently has no percent,
             # so we don't want to append to the list
@@ -107,7 +112,7 @@ def calc_percentage(module_list, module_name, prestring):
 
     # and then compute the average
     avg=sum(weightedPercentages)/len(weightedPercentages)
-    print_strings.append(f'{prestring}{module_name}: {avg}')
+    print_strings.append(f'{prestring}{module_name}: {avg}{args.post_string}')
     return avg
 
 
@@ -151,15 +156,21 @@ def open_config_file():
             args.indent_string=config["indent_string"]
         else:
             args.indent_string="  "
+
+    if args.post_string==None:
+        if "post_string" in config:
+            args.post_string=config["post_string"]
+        else:
+            args.post_string="%"
     return config
 
 
 
 config = open_config_file()
 
-calc_percentage(config["modules"],'Overall','')
 
 if args.command=='print-marks':
+    calc_percentage(config["modules"],'Overall','')
     # print_strings give us the right strings but upside down, so we reverse
     # them and then print them
     print_strings.reverse()

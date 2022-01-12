@@ -1,5 +1,6 @@
 ignore_unmarked: true
 indent_string: "  "
+post_string: "%"
 
 modules:
   - module: NMP
