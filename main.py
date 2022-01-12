@@ -29,7 +29,6 @@ parser.add_argument('--indent-string',
 
 parser.add_argument('command',
                     help='Command to run',
-                    nargs='?',
                     choices=['print-marks', 'print-modules', 'check-config'])
 
 
