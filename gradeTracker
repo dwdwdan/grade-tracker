@@ -47,7 +47,8 @@ def default_data_file(config):
         sys.exit()
 
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+            formatter_class=argparse.RawTextHelpFormatter)
 
 parser.add_argument('-c', '--config-file',
                     help='The file used for configuration',
