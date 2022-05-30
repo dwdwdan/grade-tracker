@@ -10,15 +10,25 @@ from xdg import xdg_config_home, xdg_data_home
 __version__ = "1.0.1"
 
 
-def trunc(num, precision):
-    """Casts a float num to a string with precision digits of precision."""
+def trunc(num, precision) -> str:
+    """Truncates num so it has precision decimal places. Returns a string"""
     temp = str(num)
     for x in range(len(temp)):
         if temp[x] == '.':
+            # x is the index of the decimal point
             try:
-                return float(temp[:x+precision+1])
-            except:
-                return float(temp)
+                # x+precision+1 is the index of the last number we
+                # want to include. Therefore we return from the start
+                # of the string to the end of the string
+                return temp[:x+precision+1]
+            except IndexError:
+                # This error will occur if x+precision+1 is outside
+                # the length of the string. In this case, we just
+                # don't truncate the string at all.
+                return temp
+    # If we get here, there is no decimal place in the
+    # number. Therefore we can just return it, assuming that it is an
+    # integer.
     return temp
 
 
