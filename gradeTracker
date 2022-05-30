@@ -32,14 +32,27 @@ def trunc(num, precision) -> str:
     return temp
 
 
-def default_config_file():
+def get_config_file() -> str:
+    """Get the path for the config file as a string.
+
+    Looks for file in the following order:
+
+    * xdg_config_home/gradeTracker/config.yml
+    * ./config.yml
+
+    If no config file is found, the user is shown an error message and
+    the program exits.
+    """
+
     xdg_config_file = str(xdg_config_home())+"/gradeTracker/config.yml"
     if file_exists(xdg_config_file):
         return xdg_config_file
     elif file_exists('config.yml'):
         return 'config.yml'
     else:
-        print('No config file found. Please place one at $XDG_CONFIG_HOME/gradeTracker/config.yml', file=sys.stderr)
+        print(('No config file found.'
+               'Please place one at $XDG_CONFIG_HOME/gradeTracker/config.yml'),
+              file=sys.stderr)
         sys.exit()
 
 
@@ -66,7 +79,7 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('-c', '--config-file',
                     help='The file used for configuration',
-                    default=default_config_file(),
+                    default=get_config_file(),
                     dest='config_file')
 
 parser.add_argument('-d', '--data-file',
