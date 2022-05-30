@@ -92,6 +92,7 @@ def get_data_file(config) -> str:
         sys.exit()
 
 
+# Create a parser for arguments, and add the required possibilities.
 parser = argparse.ArgumentParser(
             formatter_class=argparse.RawTextHelpFormatter)
 
