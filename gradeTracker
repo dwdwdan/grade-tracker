@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"A Small Python CLI to track grades"
 
 import sys
 import argparse
