@@ -56,13 +56,30 @@ def get_config_file() -> str:
         sys.exit()
 
 
-def default_data_file(config):
+def get_data_file(config) -> str:
+    """Get the path for the data file as a string.
+
+    Looks for file in the following order:
+
+    * data_file variable set in config file (if it is set)
+    * xdg_data_home/gradeTracker/data.yml
+    * ./data.yml
+
+    If the file set in the config file does not exist, the user is
+    shown an error and the program exits
+
+    If neither xdg_data_home/gradeTracker/data.yml or ./data.yml
+    exist, the user is shown an error and the program exits
+    """
+
     xdg_data_file = str(xdg_data_home())+"/gradeTracker/data.yml"
     if "data_file" in config:
         if file_exists(config["data_file"]):
             return config["data_file"]
         else:
-            print(f'{config["data_file"]} is set as the data file but does not exist.\nThis must be an explicit path (i.e. does not contain ~ or environment variables)', file=sys.stderr)
+            print((f'{config["data_file"]} is set as the data file but does not exist.\n'
+                   'This must be an explicit path (i.e. does not contain ~ or environment variables)'),
+                  file=sys.stderr)
             sys.exit()
 
     elif file_exists(xdg_data_file):
@@ -70,7 +87,8 @@ def default_data_file(config):
     elif file_exists('data.yml'):
         return 'data.yml'
     else:
-        print('No data file found. Please place one at $XDG_DATA_HOME/gradeTracker/data.yml', file=sys.stderr)
+        print('No data file found. Please place one at $XDG_DATA_HOME/gradeTracker/data.yml',
+              file=sys.stderr)
         sys.exit()
 
 
@@ -233,7 +251,7 @@ def open_config_file():
             sys.exit()
 
         if args.data_file == None:
-            args.data_file = default_data_file(config)
+            args.data_file = get_data_file(config)
 
         if "total_weighting_tolerance" in config:
             args.total_weighting_tolerance = config["total_weighting_tolerance"]
