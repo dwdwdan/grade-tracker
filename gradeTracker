@@ -6,7 +6,7 @@ from os.path import exists as file_exists
 import yaml
 from xdg import xdg_config_home, xdg_data_home
 
-__version__="1.0.1"
+__version__ = "1.0.1"
 
 
 def trunc(num, precision):
@@ -20,8 +20,9 @@ def trunc(num, precision):
                 return float(temp)
     return temp
 
+
 def default_config_file():
-    xdg_config_file=str(xdg_config_home())+"/gradeTracker/config.yml"
+    xdg_config_file = str(xdg_config_home())+"/gradeTracker/config.yml"
     if file_exists(xdg_config_file):
         return xdg_config_file
     elif file_exists('config.yml'):
@@ -30,8 +31,9 @@ def default_config_file():
         print('No config file found. Please place one at $XDG_CONFIG_HOME/gradeTracker/config.yml', file=sys.stderr)
         sys.exit()
 
+
 def default_data_file(config):
-    xdg_data_file=str(xdg_data_home())+"/gradeTracker/data.yml"
+    xdg_data_file = str(xdg_data_home())+"/gradeTracker/data.yml"
     if "data_file" in config:
         if file_exists(config["data_file"]):
             return config["data_file"]
@@ -88,7 +90,7 @@ parser.add_argument('--total-weighting-tolerance',
                     dest='total_weighting_tolerance',
                     default=None)
 
-parser.add_argument('-v','--version',
+parser.add_argument('-v', '--version',
                     action='version',
                     version="%(prog)s ("+__version__+")")
 
@@ -102,13 +104,14 @@ def print_module_tree(module_list, prestring):
     prestring will be put at the start of each message,
     and 2 spaces will be appended for each added layer"""
     for module in module_list:
-        fstring=f'{prestring}{module["module"]} with weighting {module["weighting"]}{args.post_string}'
+        fstring = f'{prestring}{module["module"]} with weighting {module["weighting"]}{args.post_string}'
         if 'percent' in module:
-            fstring+=f' and percentage {module["percent"]}{args.post_string}'
+            fstring += f' and percentage {module["percent"]}{args.post_string}'
         print(fstring)
         if 'modules' in module:
             # This means there are submodules, so we should recurse into them
             print_module_tree(module["modules"], prestring+args.indent_string)
+
 
 def check_module_tree(module_list):
     """Checks the module tree inside module_list.
@@ -132,12 +135,12 @@ def calc_percentage(module_list, module_name, prestring):
     It will also compute print_strings in case we want to print later"""
 
     # First we want to generate lists of all of the percentages and weightings on this level
-    percentages=[]
-    weightings=[]
+    percentages = []
+    weightings = []
     # This an array of strings ready for later printing
     global print_strings
     if 'print_strings' not in globals():
-        print_strings=[]
+        print_strings = []
 
     for module in module_list:
         if 'modules' in module:
@@ -145,14 +148,14 @@ def calc_percentage(module_list, module_name, prestring):
             percent = calc_percentage(module['modules'], module['module'], prestring+args.indent_string)
         elif 'percent' in module:
             # We are at the bottom of the tree, this is as small as we get
-            percent=module["percent"]
-            percent_string=trunc(percent,2)
+            percent = module["percent"]
+            percent_string = trunc(percent, 2)
             print_strings.append(f"{prestring+args.indent_string}{module['module']}: {percent_string}{args.post_string}")
         else:
             # This module currently has no percent,
             # so we don't want to append to the list
             continue
-        weighting=module["weighting"]
+        weighting = module["weighting"]
         percentages.append(percent)
         weightings.append(weighting)
 
@@ -160,24 +163,22 @@ def calc_percentage(module_list, module_name, prestring):
     if args.ignore_unmarked:
         # We don't want to assume 0, so we need to recompute weightings
         # We do this by finding a scale factor to scale them by so the total weighting is 100
-        total_weighting=sum(weightings)
-        scale_factor=100/total_weighting
+        total_weighting = sum(weightings)
+        scale_factor = 100/total_weighting
         # Now we update weightings to be scaled by the scale factor
-        for idx,weighting in enumerate(weightings):
-            weightings[idx]=scale_factor*weighting
+        for idx, weighting in enumerate(weightings):
+            weightings[idx] = scale_factor*weighting
 
     # Now we can compute a list of weighted percentages
-    weightedPercentages=[]
-    for idx,percent in enumerate(percentages):
+    weightedPercentages = []
+    for idx, percent in enumerate(percentages):
         weightedPercentages.append(percent*weightings[idx]/100)
 
     # and then compute the sum
-    avg=sum(weightedPercentages)
-    avg_string=trunc(avg,2)
+    avg = sum(weightedPercentages)
+    avg_string = trunc(avg, 2)
     print_strings.append(f'{prestring}{module_name}: {avg_string}{args.post_string}')
     return avg
-
-
 
 
 def check_data_file(data):
@@ -195,53 +196,53 @@ def open_config_file():
     # I want to parse the arguments here so I can set the default values from
     # the config file before running anything else
     global args
-    args=parser.parse_args()
+    args = parser.parse_args()
 
-    with open(args.config_file,"r") as config_file:
+    with open(args.config_file, "r") as config_file:
         # Load the config file
         try:
             config = yaml.safe_load(config_file)
         except yaml.YAMLError as exc:
             # The yaml in the config is invalid. tell the user and return
             print("Config File Invalid, YAML processor returns:")
-            print(exc,file=sys.stderr)
+            print(exc, file=sys.stderr)
             sys.exit()
 
-        if args.data_file==None:
-            args.data_file=default_data_file(config)
+        if args.data_file == None:
+            args.data_file = default_data_file(config)
 
         if "total_weighting_tolerance" in config:
-            args.total_weighting_tolerance=config["total_weighting_tolerance"]
+            args.total_weighting_tolerance = config["total_weighting_tolerance"]
         else:
-            args.total_weighting_tolerance=5
+            args.total_weighting_tolerance = 5
 
-        with open(args.data_file,"r") as data_file:
+        with open(args.data_file, "r") as data_file:
             # Load the data file
             try:
                 data = yaml.safe_load(data_file)
             except yaml.YAMLError as exc:
                 # The yaml in the data is invalid, tell the user and return
                 print("Data File Invalid, YAML processor returns:")
-                print(exc,file=sys.stderr)
+                print(exc, file=sys.stderr)
                 sys.exit()
             # Check the modules in the data file are configured validly
             check_data_file(data)
-    if args.ignore_unmarked==None:
+    if args.ignore_unmarked == None:
         if "ignore_unmarked" in config:
-            args.ignore_unmarked=config["ignore_unmarked"]
+            args.ignore_unmarked = config["ignore_unmarked"]
         else:
-            args.ignore_unmarked=True
-    if args.indent_string==None:
+            args.ignore_unmarked = True
+    if args.indent_string == None:
         if "indent_string" in config:
-            args.indent_string=config["indent_string"]
+            args.indent_string = config["indent_string"]
         else:
-            args.indent_string="  "
+            args.indent_string = "  "
 
-    if args.post_string==None:
+    if args.post_string == None:
         if "post_string" in config:
-            args.post_string=config["post_string"]
+            args.post_string = config["post_string"]
         else:
-            args.post_string="%"
+            args.post_string = "%"
 
     return config, data
 
@@ -249,17 +250,17 @@ def open_config_file():
 config, data = open_config_file()
 
 
-if args.command=='print-marks':
-    calc_percentage(data["modules"],'Overall','')
+if args.command == 'print-marks':
+    calc_percentage(data["modules"], 'Overall', '')
     # print_strings give us the right strings but upside down, so we reverse
     # them and then print them
     print_strings.reverse()
     for string in print_strings:
         print(string)
 
-elif args.command=='print-modules':
-    print_module_tree(data["modules"],"")
+elif args.command == 'print-modules':
+    print_module_tree(data["modules"], "")
 
-elif args.command=='check-config':
+elif args.command == 'check-config':
     # We've already checked the config is valid so we can just tell the user
     print("Config is valid")
