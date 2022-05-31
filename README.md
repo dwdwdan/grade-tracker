@@ -9,7 +9,7 @@ $ pip install grade-tracker
 
 # The Data File
 
-The data file, by default read from `$XDG_DATA_HOME/gradeTracker/data.yml` is a yaml file containing the data to calculate with.
+The data file, by default read from `$XDG_DATA_HOME/gradeTracker/data.yml` is a yaml file containing the data to calculate with. An example of this file can be found [in the github repository](https://www.github.com/dwdwdan/gradeTracker/blob/master/data.yml)
 
 The file should always contain a `modules` key with a list of submodules. These submodules should have a `weighting` set which sums to 100 (this is checked when gradeTracker is run). This represents how much this module is worth.
 
@@ -19,7 +19,7 @@ A module can also have submodules by including the `modules` tag, and following 
 
 # Configuration
 
-Configuration is done in the yaml file `$XDG_CONFIG_HOME/gradeTracker/config.yml`. By default this is ​`~/.config/gradeTracker/config.yml\` There is 5 possible options:
+Configuration is done in the yaml file `$XDG_CONFIG_HOME/gradeTracker/config.yml`. By default this is ​`~/.config/gradeTracker/config.yml`. An example of this file can be found [in the github repository](https://www.github.com/dwdwdan/gradeTracker/blob/master/config.yml) There are 5 possible options:
 
 ## ignore~unmarked~
 
