@@ -92,57 +92,6 @@ def get_data_file(config: dict) -> str:
         sys.exit()
 
 
-# Create a parser for arguments, and add the required possibilities.
-parser = argparse.ArgumentParser(
-            formatter_class=argparse.RawTextHelpFormatter)
-
-parser.add_argument('-c', '--config-file',
-                    help='The file used for configuration',
-                    default=get_config_file(),
-                    dest='config_file')
-
-# The default for data file has to be none, as we want to check the
-# config file with high priority. However we have not loaded the
-# config file yet, so cannot do this.
-parser.add_argument('-d', '--data-file',
-                    help='The file used for data',
-                    default=None,
-                    dest='data_file')
-
-parser.add_argument('--ignore-unmarked',
-                    help='If enabled, gradeTracker will not assume that unmarked modules are 0.',
-                    dest='ignore_unmarked',
-                    default=None,
-                    action='store_true')
-
-parser.add_argument('--use-unmarked',
-                    help='If enabled, gradeTracker will assume that unmarked modules are 0.',
-                    dest='ignore_unmarked',
-                    default=None,
-                    action='store_false')
-
-parser.add_argument('--indent-string',
-                    help='String that should be used to indent each option. \"  \" by default',
-                    dest='indent_string',
-                    default=None)
-
-parser.add_argument('--post-string',
-                    help='String that should be displayed after a grade is shown. \"%%\" by default',
-                    dest='post_string',
-                    default=None)
-
-parser.add_argument('--total-weighting-tolerance',
-                    help='How close do we require the total weight to be to 100',
-                    dest='total_weighting_tolerance',
-                    default=None)
-
-parser.add_argument('-v', '--version',
-                    action='version',
-                    version="%(prog)s ("+__version__+")")
-
-parser.add_argument('command',
-                    help='Command to run',
-                    choices=['print-marks', 'print-modules', 'check-config'])
 
 
 def print_module_tree(module_dict: dict, prestring: str) -> None:
@@ -371,6 +320,58 @@ def open_data_file() -> dict:
         check_data_dict(data)
     return data
 
+
+# Create a parser for arguments, and add the required possibilities.
+parser = argparse.ArgumentParser(
+            formatter_class=argparse.RawTextHelpFormatter)
+
+parser.add_argument('-c', '--config-file',
+                    help='The file used for configuration',
+                    default=get_config_file(),
+                    dest='config_file')
+
+# The default for data file has to be none, as we want to check the
+# config file with high priority. However we have not loaded the
+# config file yet, so cannot do this.
+parser.add_argument('-d', '--data-file',
+                    help='The file used for data',
+                    default=None,
+                    dest='data_file')
+
+parser.add_argument('--ignore-unmarked',
+                    help='If enabled, gradeTracker will not assume that unmarked modules are 0.',
+                    dest='ignore_unmarked',
+                    default=None,
+                    action='store_true')
+
+parser.add_argument('--use-unmarked',
+                    help='If enabled, gradeTracker will assume that unmarked modules are 0.',
+                    dest='ignore_unmarked',
+                    default=None,
+                    action='store_false')
+
+parser.add_argument('--indent-string',
+                    help='String that should be used to indent each option. \"  \" by default',
+                    dest='indent_string',
+                    default=None)
+
+parser.add_argument('--post-string',
+                    help='String that should be displayed after a grade is shown. \"%%\" by default',
+                    dest='post_string',
+                    default=None)
+
+parser.add_argument('--total-weighting-tolerance',
+                    help='How close do we require the total weight to be to 100',
+                    dest='total_weighting_tolerance',
+                    default=None)
+
+parser.add_argument('-v', '--version',
+                    action='version',
+                    version="%(prog)s ("+__version__+")")
+
+parser.add_argument('command',
+                    help='Command to run',
+                    choices=['print-marks', 'print-modules', 'check-config'])
 
 # When the program first starts, we need to load the config and data
 # files.
