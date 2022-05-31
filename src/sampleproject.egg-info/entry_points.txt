@@ -1,0 +1,2 @@
+[console_scripts]
+sample = grade_tracker:main
