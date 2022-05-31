@@ -159,19 +159,39 @@ def print_module_tree(module_dict, prestring) -> None:
             print_module_tree(module["modules"], prestring+args.indent_string)
 
 
-def check_module_tree(module_list):
-    """Checks the module tree inside module_list.
-    Will check that the total percentage is 100,
-    and will throw an error otherwise"""
+def check_module_tree(module_dict) -> bool:
+    """Checks the module tree inside module_dict is valid.
+
+    If any subtree does not sum close to 100, the user will be shown
+    an error and the program will exit. The sum has to be within
+    args.total_weighting_tolerance of 100 to be valid.
+    """
+
+    # We want to sum all the weightings of the modules that are first
+    # level elements of module_dict.
     total_weighting = 0
-    for module in module_list:
+    for module in module_dict:
         total_weighting += module["weighting"]
+
+        # We also want to check any submodules, so we recurse in
         if 'modules' in module:
-            if check_module_tree(module["modules"]) == False:
-                print(f"Config File Invalid \n{module['module']}'s submodules do not sum to 100%", file=sys.stderr)
+            if check_module_tree(module["modules"]) is False:
+                # We know that a module tree does not sum to 100, so
+                # we tell the user there is an error and exit the
+                # program.
+                print(f"Config File Invalid \n{module['module']}'s submodules do not sum to 100%",
+                      file=sys.stderr)
                 sys.exit()
+
+    # We have to allow some tolerance for the total weighting to be
+    # away from 100%. This will give some small calculation errors,
+    # but is needed in case a module has a weighting that is a
+    # recurring decimal.
     if abs(total_weighting - 100) > args.total_weighting_tolerance:
-        # The percentages do not add up to 100, we should throw an error
+        # Returning false here is equivalent to throwing an error.
+
+        # TODO: It might be worth moving the error throwing to here
+        # instead of at the next level
         return False
 
 
