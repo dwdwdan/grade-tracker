@@ -101,6 +101,9 @@ parser.add_argument('-c', '--config-file',
                     default=get_config_file(),
                     dest='config_file')
 
+# The default for data file has to be none, as we want to check the
+# config file with high priority. However we have not loaded the
+# config file yet, so cannot do this.
 parser.add_argument('-d', '--data-file',
                     help='The file used for data',
                     default=None,
@@ -281,65 +284,96 @@ def check_data_dict(data) -> None:
         sys.exit()
 
 
-def open_config_file():
-    """Open and check the config file is valid.
-    Returns a dictionary containing the config"""
+def load_config() -> None:
+    """Loads the config, combining CLI arguments and config file settings.
+
+    Opens the config file, and checks it is valid YAML. If it is not,
+    an error is shown.
+
+    Merges config settings with the following priorities
+
+    * Command Line Parameters
+    * Config File Settings
+    * Default Values
+
+    Config settings are stored inside the global args.
+    """
 
     # I want to parse the arguments here so I can set the default values from
     # the config file before running anything else
     global args
     args = parser.parse_args()
 
+    # args.config_file has the default set in case the user does not
+    # specify it on the command line
     with open(args.config_file, "r") as config_file:
         # Load the config file
         try:
             config = yaml.safe_load(config_file)
         except yaml.YAMLError as exc:
-            # The yaml in the config is invalid. tell the user and return
+            # The yaml in the config is invalid. throw an error and
+            # end the program.
             print("Config File Invalid, YAML processor returns:")
             print(exc, file=sys.stderr)
             sys.exit()
 
-        if args.data_file == None:
-            args.data_file = get_data_file(config)
+    # We couldn't set the default earlier because of run order, so
+    # we now set it to it's default if it wasn't set as a CLI
+    # argument.
+    if args.data_file is None:
+        args.data_file = get_data_file(config)
 
+    # If the user has not set things on the command line, we want to
+    # first check the config file, and if not use the default value
+
+    if args.total_weighting_tolerance is None:
         if "total_weighting_tolerance" in config:
             args.total_weighting_tolerance = config["total_weighting_tolerance"]
         else:
             args.total_weighting_tolerance = 5
 
-        with open(args.data_file, "r") as data_file:
-            # Load the data file
-            try:
-                data = yaml.safe_load(data_file)
-            except yaml.YAMLError as exc:
-                # The yaml in the data is invalid, tell the user and return
-                print("Data File Invalid, YAML processor returns:")
-                print(exc, file=sys.stderr)
-                sys.exit()
-            # Check the modules in the data file are configured validly
-            check_data_dict(data)
-    if args.ignore_unmarked == None:
+    if args.ignore_unmarked is None:
         if "ignore_unmarked" in config:
             args.ignore_unmarked = config["ignore_unmarked"]
         else:
             args.ignore_unmarked = True
-    if args.indent_string == None:
+
+    if args.indent_string is None:
         if "indent_string" in config:
             args.indent_string = config["indent_string"]
         else:
             args.indent_string = "  "
 
-    if args.post_string == None:
+    if args.post_string is None:
         if "post_string" in config:
             args.post_string = config["post_string"]
         else:
             args.post_string = "%"
 
-    return config, data
+
+def open_data_file() -> dict:
+    """Opens the data file and returns the data
+
+    Open the data file in args.data_file, check that it is valid YAML,
+    and check that the weightings sum as close to 100
+    """
+    with open(args.data_file, "r") as data_file:
+        try:
+            data = yaml.safe_load(data_file)
+        except yaml.YAMLError as exc:
+            # The yaml in the data is invalid, tell the user and end
+            # the program
+            print("Data File Invalid, YAML processor returns:")
+            print(exc, file=sys.stderr)
+            sys.exit()
+        # Check the modules in the data file have total weighting near
+        # to 100.
+        check_data_dict(data)
+    return data
 
 
-config, data = open_config_file()
+load_config()
+data = open_data_file()
 
 
 if args.command == 'print-marks':
