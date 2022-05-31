@@ -5,6 +5,10 @@ tmp/
 
 *.py[cod]
 *.egg
+*.egg-info
 build
 htmlcov
 *.zsh
+
+*~
+dist
