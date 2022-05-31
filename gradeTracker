@@ -195,56 +195,77 @@ def check_module_tree(module_dict) -> bool:
         return False
 
 
-def calc_percentage(module_list, module_name, prestring):
-    """Calculates the weighted average percentage inside module_list,
-    respecting, ignore_unmarked
-    It will also compute print_strings in case we want to print later"""
+def calc_percentage(module_dict, module_name, prestring) -> float:
+    """Calculates the weighted average percentage inside module_dict.
 
-    # First we want to generate lists of all of the percentages and weightings on this level
+    Additionally stores strings for printing in the global variable
+    print_strings
+    """
+
+    # First we want to generate lists of all of the percentages and
+    # weightings on this level
     percentages = []
     weightings = []
+
     # This an array of strings ready for later printing
     global print_strings
+
+    # Check to see if print_strings has already been defined. If it
+    # hasn't we need to define it to be an empty list
     if 'print_strings' not in globals():
         print_strings = []
 
-    for module in module_list:
+    for module in module_dict:
         if 'modules' in module:
-            # we need to recursively compute it
+            # This module has submodules. Therefore the percent for
+            # this module must be computed recursively.
             percent = calc_percentage(module['modules'], module['module'], prestring+args.indent_string)
         elif 'percent' in module:
-            # We are at the bottom of the tree, this is as small as we get
+            # This means there are no submodules, and we are therefore
+            # at the bottom of the tree. Therefore we extrct the
+            # percentage.
             percent = module["percent"]
+
+            # We want the string to include 2 decimal places at
+            # maximum, to make the output look nice.
             percent_string = trunc(percent, 2)
-            print_strings.append(f"{prestring+args.indent_string}{module['module']}: {percent_string}{args.post_string}")
+            print_strings.append(f"{prestring+args.indent_string}{module['module']}: "
+                                 f"{percent_string}{args.post_string}")
         else:
-            # This module currently has no percent,
-            # so we don't want to append to the list
+            # This module currently has no percentage
+            # applied. Therefore we just ignore the module.  This case
+            # will occur if the module has not been marked yet.
             continue
         weighting = module["weighting"]
         percentages.append(percent)
         weightings.append(weighting)
 
-    # If we want to ignore unmarked, we need to adjust the weightings so that this happens
+    # If we want to ignore unmarked, we need to adjust the weightings
+    # so that the total weighting is 100.
     if args.ignore_unmarked:
-        # We don't want to assume 0, so we need to recompute weightings
-        # We do this by finding a scale factor to scale them by so the total weighting is 100
+        # We need to find the scale factor to multiply each weighting
+        # by so that the total is 100.
         total_weighting = sum(weightings)
         scale_factor = 100/total_weighting
         # Now we update weightings to be scaled by the scale factor
         for idx, weighting in enumerate(weightings):
             weightings[idx] = scale_factor*weighting
 
-    # Now we can compute a list of weighted percentages
+    # Now we have appropriate weightings, we can multiply the
+    # weighting by the percentage to get the weighted percentages. We
+    # also need to divide by 100 so that the weighted percentage stays
+    # as a percentage.
     weightedPercentages = []
     for idx, percent in enumerate(percentages):
         weightedPercentages.append(percent*weightings[idx]/100)
 
-    # and then compute the sum
-    avg = sum(weightedPercentages)
-    avg_string = trunc(avg, 2)
-    print_strings.append(f'{prestring}{module_name}: {avg_string}{args.post_string}')
-    return avg
+    # The sum of the weighted percentages is the weighted average
+    weighted_avg = sum(weightedPercentages)
+    # We only want it to display at most 2 decimal places of the
+    # weighted average. If we do not do this, it looks bad.
+    weighted_avg_string = trunc(weighted_avg, 2)
+    print_strings.append(f'{prestring}{module_name}: {weighted_avg_string}{args.post_string}')
+    return weighted_avg
 
 
 def check_data_file(data):
