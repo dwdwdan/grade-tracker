@@ -151,7 +151,7 @@ def print_module_tree(module_dict, prestring) -> None:
     prestring will be put at the start of each message,
     and 2 spaces will be appended for each added layer"""
     for module in module_dict:
-        fstring = (f'{prestring}{module["module"]}'
+        fstring = (f'{prestring}{module["module"]} '
                    f'with weighting {module["weighting"]}{args.post_string}')
         # This string looks like '  moduleName with weighting xx%
         if 'percent' in module:
