@@ -6,7 +6,7 @@ long_desc = (this_dir / "README.md").read_text()
 
 setup(
     name="grade-tracker",
-    version="1.0.11",
+    version="1.0.1",
     author="Dan Walters",
     author_email="dan.walters5@outlook.com",
     description="A CLI to track grades",
