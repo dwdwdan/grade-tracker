@@ -268,11 +268,16 @@ def calc_percentage(module_dict, module_name, prestring) -> float:
     return weighted_avg
 
 
-def check_data_file(data):
-    """Checks whether the data file is valid"""
-    # This essentially wraps check_module_tree to additionally check the outer layer
-    if check_module_tree(data["modules"]) == False:
-        print(f"Data File Invalid \nRoot tree's percent does not sum to 100", file=sys.stderr)
+def check_data_dict(data) -> None:
+    """Checks whether the data is valid"""
+
+    # This function wraps check_module_tree to check the overall data,
+    # rather than just a specific tree.
+    if check_module_tree(data["modules"]) is False:
+        # If check_module_tree returns false, the tree does not sum to 100
+
+        print("Data File Invalid \nRoot tree's percent does not sum to 100",
+              file=sys.stderr)
         sys.exit()
 
 
@@ -313,7 +318,7 @@ def open_config_file():
                 print(exc, file=sys.stderr)
                 sys.exit()
             # Check the modules in the data file are configured validly
-            check_data_file(data)
+            check_data_dict(data)
     if args.ignore_unmarked == None:
         if "ignore_unmarked" in config:
             args.ignore_unmarked = config["ignore_unmarked"]
