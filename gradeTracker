@@ -372,10 +372,13 @@ def open_data_file() -> dict:
     return data
 
 
+# When the program first starts, we need to load the config and data
+# files.
 load_config()
 data = open_data_file()
 
 
+# Process the command the user gives.
 if args.command == 'print-marks':
     calc_percentage(data["modules"], 'Overall', '')
     # print_strings give us the right strings but upside down, so we reverse
