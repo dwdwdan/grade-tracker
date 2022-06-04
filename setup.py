@@ -1,8 +1,7 @@
 from setuptools import setup, find_packages
-from pathlib import Path
+import os.path as path
 
-this_dir=Path(__file__).parent
-long_desc = (this_dir / "README.md").read_text()
+long_desc = open(path.join(path.dirname(__file__), "README.md")).read()
 
 setup(
     name="grade-tracker",
@@ -21,5 +20,5 @@ setup(
             ]
         },
     long_description=long_desc,
-    long_description_content_typr="text/markdown",
+    long_description_content_type="text/markdown",
 )
