@@ -19,25 +19,25 @@ A module can also have submodules by including the `modules` tag, and following 
 
 # Configuration
 
-Configuration is done in the yaml file `$XDG_CONFIG_HOME/gradeTracker/config.yml`. By default this is ​`~/.config/gradeTracker/config.yml`. An example of this file can be found [in the github repository](https://www.github.com/dwdwdan/gradeTracker/blob/master/config.yml) There are 5 possible options:
+Configuration is done in the yaml file `$XDG_CONFIG_HOME/gradeTracker/config.yml`. By default this is ​`~/.config/gradeTracker/config.yml`. An example of this file can be found [in the github repository](https://www.github.com/dwdwdan/gradeTracker/blob/master/config.yml). There are 5 possible options:
 
-## ignore~unmarked~
+## ignore-unmarked
 
 If set to true, gradeTracker will ignore variables without a mark attatched. If set to false, gradeTracker will assume they are 0. Defaults to true if unset.
 
-## data~file~
+## data-file
 
 This is the file that gradeTracker will read to calculate percentages. If not set, it will default to `$XDG_DATA_HOME/gradeTracker/data.yml`
 
-## indent~string~
+## indent-string
 
 This is used each time gradeTracker indents. Default is `"  "`, but `"| "` also looks nice
 
-## post~string~
+## post-string
 
 This is used after each mark is given. Defaults to `"%"`
 
-## total~weightingtolerance~
+## total-weightingtolerance
 
 How close we require the total weighting to be to 100. This is so that fractional percentages can be properly used.
 
