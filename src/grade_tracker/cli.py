@@ -7,7 +7,7 @@ from os.path import exists as file_exists
 import yaml
 from xdg import xdg_config_home, xdg_data_home
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 
 
 def trunc(num: float, precision: int) -> str:

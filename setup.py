@@ -5,7 +5,7 @@ long_desc = open(path.join(path.dirname(__file__), "README.md")).read()
 
 setup(
     name="grade-tracker",
-    version="1.0.1",
+    version="1.1.0",
     author="Dan Walters",
     author_email="dan.walters5@outlook.com",
     description="A CLI to track grades",
