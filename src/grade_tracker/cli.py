@@ -321,76 +321,81 @@ def open_data_file() -> dict:
     return data
 
 
-# Create a parser for arguments, and add the required possibilities.
-parser = argparse.ArgumentParser(
-            formatter_class=argparse.RawTextHelpFormatter)
+def main():
+    # Create a parser for arguments, and add the required possibilities.
+    global parser
+    parser = argparse.ArgumentParser(
+                formatter_class=argparse.RawTextHelpFormatter)
 
-parser.add_argument('-c', '--config-file',
-                    help='The file used for configuration',
-                    default=get_config_file(),
-                    dest='config_file')
+    parser.add_argument('-c', '--config-file',
+                        help='The file used for configuration',
+                        default=get_config_file(),
+                        dest='config_file')
 
-# The default for data file has to be none, as we want to check the
-# config file with high priority. However we have not loaded the
-# config file yet, so cannot do this.
-parser.add_argument('-d', '--data-file',
-                    help='The file used for data',
-                    default=None,
-                    dest='data_file')
+    # The default for data file has to be none, as we want to check the
+    # config file with high priority. However we have not loaded the
+    # config file yet, so cannot do this.
+    parser.add_argument('-d', '--data-file',
+                        help='The file used for data',
+                        default=None,
+                        dest='data_file')
 
-parser.add_argument('--ignore-unmarked',
-                    help='If enabled, gradeTracker will not assume that unmarked modules are 0.',
-                    dest='ignore_unmarked',
-                    default=None,
-                    action='store_true')
+    parser.add_argument('--ignore-unmarked',
+                        help='If enabled, gradeTracker will not assume that unmarked modules are 0.',
+                        dest='ignore_unmarked',
+                        default=None,
+                        action='store_true')
 
-parser.add_argument('--use-unmarked',
-                    help='If enabled, gradeTracker will assume that unmarked modules are 0.',
-                    dest='ignore_unmarked',
-                    default=None,
-                    action='store_false')
+    parser.add_argument('--use-unmarked',
+                        help='If enabled, gradeTracker will assume that unmarked modules are 0.',
+                        dest='ignore_unmarked',
+                        default=None,
+                        action='store_false')
 
-parser.add_argument('--indent-string',
-                    help='String that should be used to indent each option. \"  \" by default',
-                    dest='indent_string',
-                    default=None)
+    parser.add_argument('--indent-string',
+                        help='String that should be used to indent each option. \"  \" by default',
+                        dest='indent_string',
+                        default=None)
 
-parser.add_argument('--post-string',
-                    help='String that should be displayed after a grade is shown. \"%%\" by default',
-                    dest='post_string',
-                    default=None)
+    parser.add_argument('--post-string',
+                        help='String that should be displayed after a grade is shown. \"%%\" by default',
+                        dest='post_string',
+                        default=None)
 
-parser.add_argument('--total-weighting-tolerance',
-                    help='How close do we require the total weight to be to 100',
-                    dest='total_weighting_tolerance',
-                    default=None)
+    parser.add_argument('--total-weighting-tolerance',
+                        help='How close do we require the total weight to be to 100',
+                        dest='total_weighting_tolerance',
+                        default=None)
 
-parser.add_argument('-v', '--version',
-                    action='version',
-                    version="%(prog)s ("+__version__+")")
+    parser.add_argument('-v', '--version',
+                        action='version',
+                        version="%(prog)s ("+__version__+")")
 
-parser.add_argument('command',
-                    help='Command to run',
-                    choices=['print-marks', 'print-modules', 'check-config'])
+    parser.add_argument('command',
+                        help='Command to run',
+                        choices=['print-marks', 'print-modules', 'check-config'])
 
-# When the program first starts, we need to load the config and data
-# files.
-load_config()
-data = open_data_file()
+    # When the program first starts, we need to load the config and data
+    # files.
+    load_config()
+    data = open_data_file()
+
+    # Process the command the user gives.
+    if args.command == 'print-marks':
+        calc_percentage(data["modules"], 'Overall', '')
+        # print_strings give us the right strings but upside down, so we reverse
+        # them and then print them
+        print_strings.reverse()
+        for string in print_strings:
+            print(string)
+
+    elif args.command == 'print-modules':
+        print_module_tree(data["modules"], "")
+
+    elif args.command == 'check-config':
+        # We've already checked the config is valid so we can just tell the user
+        print("Config is valid")
 
 
-# Process the command the user gives.
-if args.command == 'print-marks':
-    calc_percentage(data["modules"], 'Overall', '')
-    # print_strings give us the right strings but upside down, so we reverse
-    # them and then print them
-    print_strings.reverse()
-    for string in print_strings:
-        print(string)
-
-elif args.command == 'print-modules':
-    print_module_tree(data["modules"], "")
-
-elif args.command == 'check-config':
-    # We've already checked the config is valid so we can just tell the user
-    print("Config is valid")
+if __name__ == "__main__":
+    main()
