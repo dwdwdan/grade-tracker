@@ -66,3 +66,40 @@ def test_check_module_tree_fails(monkeypatch):
 
     with pytest.raises(SystemExit):
         gt.check_module_tree(module_dict)
+
+
+@pytest.mark.parametrize('ignore_unmarked,expected', [(False, 55), (True, 62.5)])
+def test_calc_percentage(monkeypatch, ignore_unmarked, expected):
+    module_dict = [
+        {
+            "module": "Module1",
+            "weighting": 25,
+            "percent": 100
+        },
+        {
+            "module": "Module2",
+            "weighting": 75,
+            "modules": [
+                {
+                    "module": "Module3",
+                    "weighting": 20
+                },
+                {
+                    "module": "Module4",
+                    "weighting": 80,
+                    "percent": 50
+                }
+            ]
+        }
+    ]
+    expected_percent = expected
+
+    args = Mock()
+    args.indent_string = "  "
+    args.post_string = "%"
+    args.ignore_unmarked = ignore_unmarked
+    monkeypatch.setattr(gt, "args", args, False)
+
+    actual_percent = gt.calc_percentage(module_dict, "", "")
+
+    assert(expected_percent == actual_percent)
